@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Card, Typography } from "@material-tailwind/react";
 
-const TABLE_HEAD = ["Date", "Time", "Client ID", "Max BW", "BW Requested (Mbps)", "Speed"];
+// Adjusted table headers as specified
+const TABLE_HEAD = ["DID", "Date", "Time", "MIR", "BW Requested (kbps)", "BW Allocated", "Usage indicator"];
 
 export default function Table() {
   const [rows, setRows] = useState([]); // State to store rows from API
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ date: '', time: '', clientId: '' }); // Filters state
+  const [filters, setFilters] = useState({ DID: '', date: '', time: '' }); // Filters state
 
   // Fetch data from the backend
   useEffect(() => {
@@ -28,12 +29,12 @@ export default function Table() {
           const formattedTime = date.toTimeString().split(" ")[0].substring(0, 5);
 
           return [
+            record.clientId, // DID
             formattedDate, // Date
             formattedTime, // Time
-            record.clientId, // Client ID
-            record.bandwidthLimit.toFixed(1), // Max BW, formatted to 1 decimal place
-            record.bandwidthRequested.toFixed(1), // BW requested, formatted to 1 decimal place
-            record.connectionSpeed.toFixed(1) // Speed, formatted to 1 decimal place
+            record.bandwidthRequested.toFixed(1), // BW Requested, formatted to 1 decimal place
+            record.mir.toFixed(1), // MIR, formatted to 1 decimal place
+            record.allocatedBandwidth.toFixed(1) // BW Allocated, formatted to 1 decimal place
           ];
         });
 
@@ -58,10 +59,10 @@ export default function Table() {
 
   // Function to filter rows based on the selected filters
   const filteredRows = rows.filter(row => {
-    const [date, time, clientId] = row;
+    const [clientId, date, time] = row;
     const dateMatch = filters.date ? date === filters.date : true;
     const timeMatch = filters.time ? time === filters.time : true;
-    const clientIdMatch = filters.clientId ? clientId.toString() === filters.clientId : true;
+    const clientIdMatch = filters.DID ? clientId.toString() === filters.DID : true;
 
     return dateMatch && timeMatch && clientIdMatch;
   });
@@ -75,6 +76,14 @@ export default function Table() {
       {/* Filters */}
       <div className="flex mb-4 space-x-4">
         <input
+          type="number"
+          name="DID"
+          value={filters.DID}
+          onChange={handleFilterChange}
+          placeholder="DID"
+          className="border p-2 rounded"
+        />
+        <input
           type="date"
           name="date"
           value={filters.date}
@@ -86,14 +95,6 @@ export default function Table() {
           name="time"
           value={filters.time}
           onChange={handleFilterChange}
-          className="border p-2 rounded"
-        />
-        <input
-          type="number"
-          name="clientId"
-          value={filters.clientId}
-          onChange={handleFilterChange}
-          placeholder="Client ID"
           className="border p-2 rounded"
         />
       </div>

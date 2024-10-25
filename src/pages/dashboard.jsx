@@ -151,16 +151,16 @@ src="../../public/topology.png" alt="topology" />
 </div>
 <div className='flex flex-col justify-between'>
       < div className='bg-[#3EA0A3] rounded-md px-4 py-4 text-center'>
-          <h1 className='text-2xl font-semibold'>Max Bandwith Offer</h1> 
-          <p className='text-3xl font-bold'>10 Mbps</p>
+          <h1 className='text-2xl font-semibold'>Allocation ratio</h1> 
+          <p className='text-3xl font-bold'>100%</p>
       </div>
       < div className='bg-white rounded-md px-4 py-4 text-center'>
-          <h1 className='text-2xl font-semibold'>Client's Number</h1>
-          <p className='text-3xl font-bold'> 2</p>
+          <h1 className='text-2xl font-semibold'>Max Bandwith Offer</h1>
+          <p className='text-3xl font-bold'> 10 Mbps</p>
       </div>
       < div className='bg-[#C7F5C7] rounded-md px-4 py-4 text-center'>
-          <h1 className='text-2xl font-semibold'>Online Client's Number</h1> 
-          <p className='text-3xl font-bold'> 2</p>
+          <h1 className='text-2xl font-semibold'>Client's Number</h1> 
+          <p className='text-3xl font-bold'> 10</p>
       </div>
 </div>
 
