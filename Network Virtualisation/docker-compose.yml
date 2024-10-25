@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  manager:
+    image: manager
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - my_network
+
+    volumes:
+      - .:./app
+    cap_add:
+      - NET_ADMIN  # Add this line
+    privileged: true
+
+
+  client1:
+    image: alpine
+    networks:
+      - my_network
+
+  client2:
+    image: alpine
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
+
+
