@@ -1,44 +1,36 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Papa from "papaparse";
 import { Card, Typography } from "@material-tailwind/react";
 
-// Adjusted table headers as specified
 const TABLE_HEAD = ["DID", "Date", "Time", "MIR", "BW Requested (kbps)", "BW Allocated", "Usage indicator"];
 
 export default function Table() {
-  const [rows, setRows] = useState([]); // State to store rows from API
+  const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ DID: '', date: '', time: '' }); // Filters state
+  const [filters, setFilters] = useState({ DID: '', date: '', time: '' });
 
   // Fetch data from the backend
   useEffect(() => {
     const fetchData = async () => {
-      console.log("Attempting to fetch data from the API...");
-
       try {
         const response = await axios.get("http://localhost:5000/bandwidth");
-        console.log("API response received:", response);
-
         const data = response.data;
-        console.log("Data from API:", data);
 
-        // Transform data into the format needed for the table
         const formattedRows = data.map((record) => {
           const date = new Date(record.timestamp);
           const formattedDate = date.toISOString().split("T")[0];
           const formattedTime = date.toTimeString().split(" ")[0].substring(0, 5);
 
           return [
-            record.clientId, // DID
-            formattedDate, // Date
-            formattedTime, // Time
-            record.bandwidthRequested.toFixed(1), // BW Requested, formatted to 1 decimal place
-            record.mir.toFixed(1), // MIR, formatted to 1 decimal place
-            record.allocatedBandwidth.toFixed(1) // BW Allocated, formatted to 1 decimal place
+            record.clientId,
+            formattedDate,
+            formattedTime,
+            record.bandwidthRequested.toFixed(1),
+            record.mir.toFixed(1),
+            record.allocatedBandwidth.toFixed(1)
           ];
         });
-
-        console.log("Formatted rows for table:", formattedRows);
 
         setRows(formattedRows);
         setLoading(false);
@@ -51,13 +43,13 @@ export default function Table() {
     fetchData();
   }, []);
 
-  // Function to handle filter input changes
+  // Handle filter input changes
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
 
-  // Function to filter rows based on the selected filters
+  // Filter rows based on selected filters
   const filteredRows = rows.filter(row => {
     const [clientId, date, time] = row;
     const dateMatch = filters.date ? date === filters.date : true;
@@ -67,13 +59,35 @@ export default function Table() {
     return dateMatch && timeMatch && clientIdMatch;
   });
 
+  // Handle CSV file upload
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: false,
+      skipEmptyLines: true,
+      complete: (result) => {
+        const csvRows = result.data.map((row) => [
+          row[0], // DID
+          row[1], // Date
+          row[2], // Time
+          parseFloat(row[3]).toFixed(1), // BW Requested
+          parseFloat(row[4]).toFixed(1), // MIR
+          parseFloat(row[5]).toFixed(1), // BW Allocated
+          row[6]  // Usage Indicator
+        ]);
+
+        setRows((prevRows) => [...prevRows, ...csvRows]);
+      },
+    });
+  };
+
   return (
     <div className="bg-white w-2/3 p-6 rounded-md">
-      <div>
-        <h1 className="font-semibold ml-6 mb-6">Connection speed by client over time</h1>
-      </div>
+      <h1 className="font-semibold ml-6 mb-6">Bandwidth value by client over time</h1>
 
-      {/* Filters */}
+      {/* Filters and CSV Upload */}
       <div className="flex mb-4 space-x-4">
         <input
           type="number"
@@ -81,7 +95,7 @@ export default function Table() {
           value={filters.DID}
           onChange={handleFilterChange}
           placeholder="DID"
-          className="border p-2 rounded"
+          className="border p-2 w-20 rounded"
         />
         <input
           type="date"
@@ -95,6 +109,12 @@ export default function Table() {
           name="time"
           value={filters.time}
           onChange={handleFilterChange}
+          className="border p-2 rounded"
+        />
+        <input
+          type="file"
+          accept=".csv"
+          onChange={handleFileUpload}
           className="border p-2 rounded"
         />
       </div>
