@@ -137,15 +137,15 @@ export default function Dashboard() {
       </div>
       < div className='bg-[#C7F5C7] rounded-md px-6 py-4 text-center'>
           <h1 className='text-xl font-semibold'>Online Client's Number</h1> 
-          <p className='text-2xl font-bold'> 7</p>
+          <p className='text-2xl font-bold'> -</p>
       </div>
       < div className='bg-white rounded-md px-6 py-4 text-center'>
           <h1 className='text-xl font-semibold'>Allocation ratio</h1> 
-          <p className='text-2xl font-bold'>100%</p>
+          <p className='text-2xl font-bold'>-</p>
       </div>
       < div className='bg-[#3EA0A3] rounded-md px-6 py-4 text-center'>
           <h1 className='text-xl font-semibold'>Average Abuse Score</h1> 
-          <p className='text-3xl font-bold'>46%</p>
+          <p className='text-3xl font-bold'>-</p>
       </div>
       
       
